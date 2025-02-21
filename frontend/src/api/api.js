@@ -1,7 +1,6 @@
 import axios from "axios"; 
-import jwtDecode from "jwt-decode" 
-
 const BASE_URL = "http://127.0.0.1:8001/" //should be in an env file 
+const GENERIC_TOKEN = "1234"
 
 const client = axios.create({
 	BASE_URL, }) 
@@ -24,6 +23,16 @@ client.interceptors.request.use((config)=>{
 	}
 }); 
 
+// client.interceptors.response.use((res)=>{
+// 	try{
+// 		res.headers
+// 	}
+// 	catch(error){
+// 		return Promise.reject(error)
+// 	}
+
+// })
+
 
 export const get = async(route)=>{
 	try{
@@ -38,6 +47,7 @@ export const get = async(route)=>{
 
 export const post = async(route, data)=>{
 	try{
+		console.log("requesting post method called")
 		const res = await client.post(`/${route}`,data); 
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
@@ -60,7 +70,7 @@ export const put = async(route, data)=>{
 
 export const _delete = async(route)=>{
 	try{
-		const res = await client.delete(`/${route}`,data); 
+		const res = await client.delete(`/${route}`); 
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){

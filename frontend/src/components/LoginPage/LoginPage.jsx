@@ -1,16 +1,20 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useContext} from "react";
 import styles from "./LoginPage.module.scss";
 import PasswordEye from "heroicons/24/solid/eye.svg"
 import CrossedPasswordEye from "heroicons/24/solid/eye-slash.svg"
 import useDeviceDetect from "../../useDeviceDetect";
-import {Link} from "react-router";
+
+import { UserContext } from "../../contexts/user_context";
 
 
 const LoginPage = () => {
+   const {login, register} = useContext(UserContext); 
+
+
+
     const [activeButton, setActiveButton] = useState("login");
     const [wantToRegister, setWantToRegister] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [secondPassword, setSecondPassword] = useState("");
@@ -108,7 +112,11 @@ const LoginPage = () => {
                             <p className={styles['error-message']}>{errorMessage}</p>
                         </form>
                         <div className={styles['submit-btn-container']}>
+<<<<<<< HEAD
                             <Link to="/home" className={styles['submit-btn']}>
+=======
+                            <button onClick={()=>{register({username,password})}} className={styles['submit-btn']}>
+>>>>>>> f0d6aed (added context)
                                 Register
                             </Link>
                         </div>
@@ -153,7 +161,11 @@ const LoginPage = () => {
                                 </button>
                             </div>
                             <div className={styles['submit-btn-container']}>
+<<<<<<< HEAD
                                 <Link to="/home" className={styles['submit-btn']}>
+=======
+                                <button onClick={()=>login({username,password})} className={styles['submit-btn']}>
+>>>>>>> f0d6aed (added context)
                                     Login
                                 </Link>
                             </div>
