@@ -9,9 +9,13 @@ fastapi==0.115.8
 h11==0.14.0
 idna==3.10
 jmespath==1.0.1
+passlib==1.7.4
 pydantic==2.10.6
 pydantic_core==2.27.2
 python-dateutil==2.9.0.post0
+mypy-boto3-dynamodb==1.36.0
+python-jose==3.3.0
+python-multipart==0.0.20
 python-dotenv==1.0.1
 s3transfer==0.11.2
 six==1.17.0

@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Docker/Dockerfile
+    container_name: stocktrack_api
+    command: uvicorn main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend/:/usr/src/
+    env_file:
+      - ./backend/.env
+    deploy:
+      resources:
+        limits:
+          memory: 512M # Set memory limit for the API service
+        reservations:
+          memory: 256M # Set a memory reservation (soft limit)
