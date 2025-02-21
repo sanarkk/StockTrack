@@ -2,6 +2,7 @@
 prod.env
 test.env
 dev.env
+./backend/.env
 
 files/*
 !files/.gitkeep
