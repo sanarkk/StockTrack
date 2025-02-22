@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from config import SECRET_KEY
 from services.token import verify_token, get_current_user
-from database.dynamodb import users_table, stock_tickers_name
+from database.dynamodb import users_table, stock_tickers_name, processed_table
 from models.user_models import UserCreate, User, LoginRequest
 from services.user_services import get_user_by_username, create_user
 from auth.auth import get_password_hash, verify_password, create_access_token
@@ -122,3 +122,8 @@ async def get_user_info(
         user = get_user_by_username(current_user)
         user["password"] = None
         return user
+
+
+@router.get("/processed_articles/")
+async def get_articles():
+    return processed_table.scan()
