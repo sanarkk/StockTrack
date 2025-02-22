@@ -29,6 +29,8 @@ def get_user_by_username(
             interested_in_item = next(
                 iter(latest_user.get("Item", {}).items()), None
             )
+            if not interested_in_item or len(interested_in_item) == 0:
+                interested_in_item = []
             result = {
                 "user_id": user_item["id"],
                 "username": user_item.get("username"),
