@@ -18,47 +18,48 @@ import requests
 
 load_dotenv()
 
+
 class DynamoDBPipeline:
     def __init__(self):
         self.dynamodb = boto3.resource(
-            'dynamodb',
+            "dynamodb",
             region_name=os.getenv("AWS_REGION_NAME"),
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
         )
-        self.table = self.dynamodb.Table('InsiderArticles')
-        self.atomic_counter = self.dynamodb.Table('IndexCounter')
+        self.table = self.dynamodb.Table("InsiderArticles")
+        self.atomic_counter = self.dynamodb.Table("IndexCounter")
 
     def get_next_index_key(self):
         """Get the next sequential index key using DynamoDB's atomic counter."""
         try:
             response = self.atomic_counter.update_item(
-                Key={'index_key': 'index_key'},
-                UpdateExpression='ADD #val :incr',
-                ExpressionAttributeNames={'#val': 'value'},
-                ExpressionAttributeValues={':incr': 1},
-                ReturnValues='UPDATED_NEW'
+                Key={"index_key": "index_key"},
+                UpdateExpression="ADD #val :incr",
+                ExpressionAttributeNames={"#val": "value"},
+                ExpressionAttributeValues={":incr": 1},
+                ReturnValues="UPDATED_NEW",
             )
-            return int(response['Attributes']['value'])
+            return int(response["Attributes"]["value"])
         except Exception as e:
             logging.error(f"Error updating index counter: {e}")
             return 1
 
     def process_item(self, item, spider):
         try:
-            item['parsing_date'] = datetime.utcnow().isoformat()
-            item['index_key'] = self.get_next_index_key()
+            item["parsing_date"] = datetime.utcnow().isoformat()
+            item["index_key"] = self.get_next_index_key()
 
             self.table.put_item(
                 Item={
-                    'url': item.get('url'),
-                    'title': item.get('title'),
-                    'publish_date': item.get('publish_date'),
-                    'article_text': item.get('article_text'),
-                    'stock_ticker': item.get('stock_ticker'),
-                    'news_source': item.get('news_source'),
-                    'index_key': item.get('index_key'),
-                    'parsing_date': item.get('parsing_date')
+                    "url": item.get("url"),
+                    "title": item.get("title"),
+                    "publish_date": item.get("publish_date"),
+                    "article_text": item.get("article_text"),
+                    "stock_ticker": item.get("stock_ticker"),
+                    "news_source": item.get("news_source"),
+                    "index_key": item.get("index_key"),
+                    "parsing_date": item.get("parsing_date"),
                 }
             )
 
@@ -74,8 +75,9 @@ class DynamoDBPipeline:
             }
 
             requests.post(
-                "http://localhost:8000/send_message/", json=payload
+                "http://localhost:8006/process_article/", json=payload
             )
+            requests.post("http://localhost:8000/send_message/", json=payload)
 
             spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
         except ClientError as e:
@@ -90,27 +92,30 @@ class ProcessDatePipeline:
 
         if date_str:
             try:
-                item['publish_date'] = datetime.strptime(date_str, '%b. %d, %Y, %I:%M %p').isoformat()
-            
+                item["publish_date"] = datetime.strptime(
+                    date_str, "%b. %d, %Y, %I:%M %p"
+                ).isoformat()
+
             except ValueError as e:
                 spider.logger.error(f"Date parsing failed for {date_str}: {e}")
-            
+
         return item
+
 
 class StockTablePipeline:
     def __init__(self):
         self.dynamodb = boto3.resource(
-            'dynamodb',
+            "dynamodb",
             region_name=os.getenv("AWS_REGION_NAME"),
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
         )
-        self.table = self.dynamodb.Table('StockTickers')
+        self.table = self.dynamodb.Table("StockTickers")
 
     def get_stock_name(self, ticker):
         try:
             stock = yf.Ticker(ticker)
-            return stock.info.get('longName', None)
+            return stock.info.get("longName", None)
         except Exception as e:
             logging.error(f"Error fetching stock name for {ticker}: {e}")
             return None
@@ -118,23 +123,27 @@ class StockTablePipeline:
     def get_current_stock_price(self, ticker):
         try:
             stock = yf.Ticker(ticker)
-            current_price = stock.history(period="1d")['Close'].iloc[-1]
+            current_price = stock.history(period="1d")["Close"].iloc[-1]
             return Decimal(str(current_price))
         except Exception as e:
-            logging.error(f"Error fetching current stock price for {ticker}: {e}")
+            logging.error(
+                f"Error fetching current stock price for {ticker}: {e}"
+            )
             return None
 
     def get_day_ago_stock_price(self, ticker):
         try:
             stock = yf.Ticker(ticker)
-            day_ago_price = stock.history(period="2d")['Close'].iloc[0]
+            day_ago_price = stock.history(period="2d")["Close"].iloc[0]
             return Decimal(str(day_ago_price))
         except Exception as e:
-            logging.error(f"Error fetching day-ago stock price for {ticker}: {e}")
+            logging.error(
+                f"Error fetching day-ago stock price for {ticker}: {e}"
+            )
             return None
 
     def process_item(self, item, spider):
-        ticker = item.get('stock_ticker')
+        ticker = item.get("stock_ticker")
         stock_name = self.get_stock_name(ticker)
         current_price = self.get_current_stock_price(ticker)
         day_ago_price = self.get_day_ago_stock_price(ticker)
@@ -148,23 +157,28 @@ class StockTablePipeline:
                         "#count": "count",
                         "#name": "stock_name",
                         "#current_price": "current_price",
-                        "#day_ago_price": "day_ago_price"
+                        "#day_ago_price": "day_ago_price",
                     },
                     ExpressionAttributeValues={
-                        ":increment": Decimal('1'),
-                        ":start": Decimal('0'),
+                        ":increment": Decimal("1"),
+                        ":start": Decimal("0"),
                         ":name": stock_name,
                         ":current_price": current_price,
-                        ":day_ago_price": day_ago_price if day_ago_price is not None else None
+                        ":day_ago_price": (
+                            day_ago_price if day_ago_price is not None else None
+                        ),
                     },
                     ReturnValues="UPDATED_NEW",
                 )
-                spider.logger.info(f"Updated stock: {ticker}, Count: {response['Attributes']['count']}, Current Price: {current_price}, Day Ago Price: {day_ago_price}")
+                spider.logger.info(
+                    f"Updated stock: {ticker}, Count: {response['Attributes']['count']}, Current Price: {current_price}, Day Ago Price: {day_ago_price}"
+                )
             except ClientError as e:
                 spider.logger.error(f"Error updating DynamoDB: {e}")
 
         return item
-    
+
+
 # class TriggerTgBotPipeline:
 #     def process_item(self, item, spider):
 #         try:
