@@ -18,8 +18,8 @@ import red_arrow from "./svgs/down.svg"
 import LineChart from "./LineChart";
 
 const HomePage = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const {username, user_id, interested_in} = useContext(UserContext)
+    const [isModalOpen, setIsModalOpen] = useState(interested_in.length === 0?true:false);
     const [search, set_search] = useState("");
     const [stocks, set_stocks] = useState([]);
     const {getSuggestions, set_selected_stocks, selected_stocks} = useContext(StocksContext)
