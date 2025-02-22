@@ -35,7 +35,7 @@ class BusinessinsiderSpider(scrapy.Spider):
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
         )
-        
+
         self.table = self.dynamodb.Table('InsiderArticles')
         self.existing_titles = self.get_existing_titles()
 
@@ -77,6 +77,7 @@ class BusinessinsiderSpider(scrapy.Spider):
         business_item['news_source'] = response.meta.get('news_source', 'Business Insider')
 
         stock_section = response.css('div.box.shares-in-news div.shares-in-news-container div.quote-container')
+        
         if stock_section:
             business_item['stock_ticker'] = stock_section.css('div.col-xs-12.no-padding a::text').get()
 

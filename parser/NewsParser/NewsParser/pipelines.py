@@ -27,22 +27,27 @@ class DynamoDBPipeline:
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
         )
         self.table = self.dynamodb.Table('InsiderArticles')
+        self.atomic_counter = self.dynamodb.Table('IndexCounter')
 
     def get_next_index_key(self):
-        """Generate the next sequential index key."""
+        """Get the next sequential index key using DynamoDB's atomic counter."""
         try:
-            response = self.table.scan(ProjectionExpression="index_key", ConsistentRead = True)
-            index_keys = [int(item['index_key']) for item in response.get('Items', []) if item.get('index_key')]
-
-            return max(index_keys) + 1 if index_keys else 1
+            response = self.atomic_counter.update_item(
+                Key={'index_key': 'index_key'},
+                UpdateExpression='ADD #val :incr',
+                ExpressionAttributeNames={'#val': 'value'},
+                ExpressionAttributeValues={':incr': 1},
+                ReturnValues='UPDATED_NEW'
+            )
+            return int(response['Attributes']['value'])
         except Exception as e:
-            logging.error(f"Error fetching index keys: {e}")
+            logging.error(f"Error updating index counter: {e}")
             return 1
 
     def process_item(self, item, spider):
         try:
             item['parsing_date'] = datetime.utcnow().isoformat()
-            item['index_key'] = str(self.get_next_index_key())
+            item['index_key'] = self.get_next_index_key()
 
             self.table.put_item(
                 Item={
@@ -57,7 +62,18 @@ class DynamoDBPipeline:
                 }
             )
 
-            #requests.post("http://localhost:8001/send_message", payload)
+            payload = {
+                'url': item.get('url'),
+                'title': item.get('title'),
+                'publish_date': item.get('publish_date'),
+                'article_text': item.get('article_text'),
+                'stock_ticker': item.get('stock_ticker'),
+                'news_source': item.get('news_source'),
+                'index_key': item.get('index_key'),
+                'parsing_date': item.get('parsing_date')
+            }
+
+            # requests.post("http://localhost:8001/send_message", payload)
 
             spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
         except ClientError as e:
