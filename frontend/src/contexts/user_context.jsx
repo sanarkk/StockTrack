@@ -90,7 +90,7 @@ const UserContextProvider = ({children})=>{
     return(
         <UserContext.Provider
             value={{
-                login, register, username, user_id, interested_in
+                login, register, username, user_id, interested_in, refresh_user
             }}
         >
             {children}

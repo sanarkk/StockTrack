@@ -2,9 +2,11 @@ import os
 import boto3
 import uvicorn
 import asyncio
+import threading
+
 
 from typing import Dict
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -43,10 +45,11 @@ dynamodb = boto3.resource(
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
 )
 
-app = FastAPI()
+app = FastAPI()  # This is your main backend
 users_table = dynamodb.Table(USERS_TABLE)
 bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+router = APIRouter()
 
 
 app.add_middleware(
@@ -90,9 +93,9 @@ def assign_chat_to_user(username: str, chat_id: str) -> None:
     user = get_user_by_username(username)
     if user:
         try:
-            user_id = user["id"]
+            user_id = user["user_id"]
             response = users_table.update_item(
-                Key={"id": user_id},
+                Key={"user_id": user_id},
                 UpdateExpression="SET chat_id = :chat_id",
                 ExpressionAttributeValues={":chat_id": chat_id},
                 ReturnValues="UPDATED_NEW",
@@ -136,13 +139,23 @@ async def cancel(update: Update, context: CallbackContext):
     return ConversationHandler.END
 
 
-@app.post("/send_message/")
+@app.post("/send_telegram_message/")
 async def send_message(request: MessageRequest):
     try:
-        await bot.send_message(chat_id=request.chat_id, text=request.article)
+        try:
+            result = await bot.bot.send_message(
+                chat_id=request.chat_id, text=request.article
+            )
+            print("message was sent")
+        except Exception as e:
+            print(e)
         return {"status": "Message sent successfully"}
     except Exception as e:
         return {"error": str(e)}
+
+
+def run_app():
+    uvicorn.run(app, host="0.0.0.0", port=8004)
 
 
 def run_bot():
@@ -157,8 +170,11 @@ def run_bot():
     bot.add_handler(conv_handler)
     loop = asyncio.get_event_loop()
     loop.create_task(bot.run_polling(allowed_updates=Update.ALL_TYPES))
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    print("sdfsdfsdf")
 
 
 if __name__ == "__main__":
+    fastapi_thread_1 = threading.Thread(target=run_app)
+    fastapi_thread_1.start()
+
     run_bot()

@@ -18,7 +18,7 @@
   align-items: center;
   background: #ffffff;
   width: 800px;
-  height: 600px;
+  height: 650px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
   padding: 20px;
@@ -84,4 +84,23 @@
     background-color: #f8f8f8;
     cursor: pointer;
   }
+}
+
+.close-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  border: 2px solid #fafafa;
+  height: 40px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  font-size: 16px;
 }
