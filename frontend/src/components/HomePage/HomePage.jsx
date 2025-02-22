@@ -13,6 +13,8 @@ import SecondStockList from "./SecondStockList/SecondStockList";
 import Logo from "../../assets/logo.png"
 import AddIcon from "../../assets/icons/add.png"
 import { ArticleContext } from '../../contexts/article_context';
+import green_arrow from "./svgs/up.svg"
+import red_arrow from "./svgs/down.svg"
 
 const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,9 +84,7 @@ const HomePage = () => {
                                     <p className={styles['stock-full-name']}>
                                         Artificial And Big Type Script
                                     </p>
-                                    <p className={styles['stock-price']}>
-                                        115.5$
-                                    </p>
+                                    <img style={{width:"35px",height:"35px"}} src={article.sentiment=="POSITIVE"?green_arrow:red_arrow} alt="" />
                                 </div>
                                 <div className={styles.bar}/>
                                 <div className={styles['article-info']}>
@@ -96,7 +96,7 @@ const HomePage = () => {
                                     </p>
                                     <div className={styles['stock-details']}>
                                         <p className={styles.author}>
-                                            George Washington
+                                            {article.news_source}
                                         </p>
                                         <p className={styles['stock-date']}>
                                             {article.publish_date}
