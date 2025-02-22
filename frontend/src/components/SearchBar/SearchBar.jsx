@@ -1,34 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styles from "./SearchBar.module.scss";
-import axios from "axios";
+import { StocksContext } from "../../contexts/stocks_context";
 
 const SearchBar = () => {
     const [searchInput, setSearchInput] = useState("");
-    const [suggestions, setSuggestions] = useState([]);
+    const {getSuggestions, stock_suggestions_status, stock_suggestions, stock_lists, set_stock_suggestions} = useContext(StocksContext); 
     const [selectedWords, setSelectedWords] = useState([]);
 
     useEffect(() => {
-        if (searchInput.length > 0) {
-            // Make request to backend as the user types
-            const fetchSuggestions = async () => {
-                try {
-                    const response = await axios.get(`/api/words?query=${searchInput}`);
-                    setSuggestions(response.data); // Assuming backend returns an array of words
-                } catch (error) {
-                    console.error("Error fetching suggestions:", error);
-                }
-            };
+        getSuggestions(searchInput); 
+        // if (searchInput.length > 0) {
+        //     // Make request to backend as the user types
+        //     const fetchSuggestions = async () => {
+        //         try {
+        //             const response = await axios.get(`/api/words?query=${searchInput}`);
+        //             setSuggestions(response.data); // Assuming backend returns an array of words
+        //         } catch (error) {
+        //             console.error("Error fetching suggestions:", error);
+        //         }
+        //     };
 
-            fetchSuggestions();
-        } else {
-            setSuggestions([]); // Clear suggestions if input is empty
-        }
+        //     fetchSuggestions();
+        // } else {
+        //     setSuggestions([]); // Clear suggestions if input is empty
+        // }
     }, [searchInput]);
 
     const handleSelectWord = (word) => {
         setSelectedWords((prevWords) => [...prevWords, word]);
         setSearchInput(""); // Optionally clear search input after selecting
-        setSuggestions([]); // Clear suggestions after selection
+        set_stock_suggestions([]); // Clear suggestions after selection
     };
 
     const handleRemoveWord = (word) => {

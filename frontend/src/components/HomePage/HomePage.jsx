@@ -1,14 +1,15 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import styles from "./HomePage.module.scss"
 import {Link} from "react-router";
 import LogoutIcon from '../../assets/icons/logoutIcon.png'
 import SearchIcon from '../../assets/icons/searchIcon.png'
 import SortByDateDropdown from "./SortByDateDropdown/SortByDateDropdown";
 import ChooseStocksModal from "./ChooseStocksModal/ChooseStocksModal";
+import { UserContext } from '../../contexts/user_context';
 
 const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const {username} = useContext(UserContext)
     return (
         <div className={styles.wrapper}>
             <div className={styles.sidebar}>
@@ -32,7 +33,7 @@ const HomePage = () => {
                                    className={styles['sort-by-stock-input']}/>
                         </div>
                     </div>
-                    <p className={styles.username}>Welcome back, <span>nanamin</span></p>
+                    <p className={styles.username}>Welcome back, <span>{username}</span></p>
                 </div>
                 <div className={styles['articles-container']}>
                     <button onClick={() => setIsModalOpen(true)}>Open Modal</button>
