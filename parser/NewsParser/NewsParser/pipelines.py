@@ -14,12 +14,9 @@ import os
 from datetime import datetime, timedelta
 import yfinance as yf
 from decimal import Decimal
+import requests
 
 load_dotenv()
-
-class NewsparserPipeline:
-    def process_item(self, item, spider):
-        return item
 
 class DynamoDBPipeline:
     def __init__(self):
@@ -31,19 +28,39 @@ class DynamoDBPipeline:
         )
         self.table = self.dynamodb.Table('InsiderArticles')
 
+    def get_next_index_key(self):
+        """Generate the next sequential index key."""
+        try:
+            response = self.table.scan(ProjectionExpression="index_key", ConsistentRead = True)
+            index_keys = [int(item['index_key']) for item in response.get('Items', []) if item.get('index_key')]
+
+            print(max(index_keys))
+            return max(index_keys) + 1 if index_keys else 1
+        except Exception as e:
+            logging.error(f"Error fetching index keys: {e}")
+            return 1
+
     def process_item(self, item, spider):
         try:
+            item['parsing_date'] = datetime.utcnow().isoformat()
+            item['index_key'] = str(self.get_next_index_key())
+
             self.table.put_item(
                 Item={
                     'url': item.get('url'),
                     'title': item.get('title'),
                     'publish_date': item.get('publish_date'),
                     'article_text': item.get('article_text'),
-                    'stock_ticker' : item.get('stock_ticker'),
-                    'news_source' : item.get('news_source')
+                    'stock_ticker': item.get('stock_ticker'),
+                    'news_source': item.get('news_source'),
+                    'index_key': item.get('index_key'),
+                    'parsing_date': item.get('parsing_date')
                 }
             )
-            spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
+
+            #requests.post("http://localhost:8001/send_message", payload)
+
+            # spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
         except ClientError as e:
             spider.logger.error(f"Failed to save article: {e}")
         return item
@@ -93,7 +110,6 @@ class StockTablePipeline:
     def get_day_ago_stock_price(self, ticker):
         try:
             stock = yf.Ticker(ticker)
-            day_ago = (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d')
             day_ago_price = stock.history(period="2d")['Close'].iloc[0]
             return Decimal(str(day_ago_price))
         except Exception as e:
@@ -131,3 +147,23 @@ class StockTablePipeline:
                 spider.logger.error(f"Error updating DynamoDB: {e}")
 
         return item
+    
+# class TriggerTgBotPipeline:
+#     def process_item(self, item, spider):
+#         try:
+#             payload = {
+#                 "url": item["url"],
+#                 "title": item["title"],
+#                 "publish_date": item["publish_date"],
+#                 "article_text": item["article_text"],
+#                 "stock_ticker": item["stock_ticker"],
+#                 "news_source": item["news_source"],
+#                 "index_key": item["index_key"],
+#                 "parsing_date": item["parsing_date"]
+#             }
+
+#             #requests.post("http://localhost:8001/send_message", payload)
+#         except Exception as e:
+#             logging.error(f"Error sending the requst to Tg bot: {e}")
+
+#         return item

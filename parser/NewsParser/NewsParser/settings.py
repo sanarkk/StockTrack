@@ -6,6 +6,7 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import logging
 
 BOT_NAME = "NewsParser"
 
@@ -51,12 +52,12 @@ ROBOTSTXT_OBEY = False
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 
-# DOWNLOADER_MIDDLEWARES = {
-#    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware' : None,
-#    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware' : 400,
-#    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-#    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-# }
+DOWNLOADER_MIDDLEWARES = {
+   'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware' : None,
+   'scrapy_user_agents.middlewares.RandomUserAgentMiddleware' : 400,
+   # 'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
+   # 'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
+}
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
@@ -101,3 +102,11 @@ FEED_EXPORT_ENCODING = "utf-8"
 
 # ROTATING_PROXY_LIST_PATH = "./proxies_list.txt"
 # RETRY_TIMES = 2
+DOWNLOAD_DELAY = 1
+LOG_ENABLED = True
+LOG_LEVEL = 'INFO'  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_FILE = 'scrapy_output.log'  # Save logs to this file
+
+# Optional: Format logs
+LOG_FORMAT = '%(asctime)s [%(name)s] %(levelname)s: %(message)s'
+LOG_DATEFORMAT = '%Y-%m-%d %H:%M:%S'
