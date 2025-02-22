@@ -12,7 +12,7 @@ from services.user_services import get_user_by_username, create_user
 from auth.auth import get_password_hash, verify_password, create_access_token
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=SECRET_KEY)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token/")
 
 
 @router.post("/register/", response_model=User)
@@ -61,10 +61,17 @@ async def save_stock_preferences(username: str, data: list[str]):
     user = get_user_by_username(username)
     if not user:
         raise HTTPException(status_code=401, detail="Account does not exist")
+    tickers_data = []
+    for ticker in data:
+        ticker_db = stock_tickers_name.scan(
+            FilterExpression="contains(ticker, :data)",
+            ExpressionAttributeValues={":data": ticker},
+        )
+        tickers_data.append(ticker_db)
     update_response = users_table.update_item(
         Key={"user_id": user["user_id"]},  # Primary Key
         UpdateExpression="SET interested_in = :new_list",
-        ExpressionAttributeValues={":new_list": data},
+        ExpressionAttributeValues={":new_list": tickers_data},
         ReturnValues="UPDATED_NEW",
     )
     return update_response
