@@ -3,6 +3,7 @@ import uuid
 from typing import Dict
 from datetime import timedelta
 from fastapi import APIRouter, HTTPException, Depends
+from boto3.dynamodb.conditions import Key
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from config import SECRET_KEY
@@ -140,4 +141,6 @@ async def get_articles():
 async def get_ticker_data(
     ticker: str, current_user: str = Depends(get_current_user)
 ):
-    return ticker_prices_table.scan()
+    return ticker_prices_table.query(
+        KeyConditionExpression=Key("ticker").eq(ticker)
+    )
