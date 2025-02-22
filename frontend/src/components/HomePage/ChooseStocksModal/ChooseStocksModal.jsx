@@ -21,7 +21,7 @@ const ChooseStocksModal = ({setIsModalOpen}) => {
 
 
     useEffect(() => {
-        getSuggestions(search_state, set_suggestions);
+        getSuggestions(search_state.toUpperCase(), set_suggestions);
     }, [search_state]);
 
     const handleSelectStock = (word) => {
