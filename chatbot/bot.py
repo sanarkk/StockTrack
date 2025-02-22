@@ -141,15 +141,18 @@ async def cancel(update: Update, context: CallbackContext):
 
 @app.post("/send_telegram_message/")
 async def send_message(request: MessageRequest):
-    print("HEREERE")
     try:
-        print("HEREERE")
         try:
-            print("HEREERE")
             result = await bot.bot.send_message(
-                chat_id=request.chat_id, text=request.article
+                chat_id=request.chat_id,
+                text=(
+                    f"Hello, fresh news have been posted about: {request.article['stock_ticker']}.\n\n"
+                    + f"{request.article['title']}\n\n"
+                    + f"{request.article['article_text']}\n\n"
+                    + f"Published at: {request.article['publish_date']}\n"
+                    + f"Published by: {request.article['news_source']}\n"
+                ),
             )
-            print("HEREERE")
             print("message was sent")
         except Exception as e:
             print(e)

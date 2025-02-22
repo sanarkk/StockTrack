@@ -1,4 +1,5 @@
 import uuid
+import requests
 
 from typing import Dict
 from datetime import timedelta
@@ -144,3 +145,8 @@ async def get_ticker_data(
     return ticker_prices_table.query(
         KeyConditionExpression=Key("ticker").eq(ticker)
     )
+
+
+@router.get("/test_bot/")
+async def test_bot():
+    requests.post("http://127.0.0.1:8000/send_message/")
