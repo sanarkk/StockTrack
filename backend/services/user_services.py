@@ -23,19 +23,24 @@ def get_user_by_username(
         if "Items" in response and len(response["Items"]) > 0:
             user_item = response["Items"][0]
             latest_user = users_table.get_item(
-                Key={"user_id": user_item["id"]},
+                Key={"user_id": user_item["user_id"]},
                 ConsistentRead=True,
             )
-            interested_in_item = next(
-                iter(latest_user.get("Item", {}).items()), None
-            )
-            if not interested_in_item or len(interested_in_item) == 0:
-                interested_in_item = []
+            try:
+                interested_in = latest_user["Item"].get("interested_in")
+            except KeyError as e:
+                interested_in = []
+            if not interested_in or len(interested_in) == 0:
+                interested_in = []
             result = {
-                "user_id": user_item["id"],
+                "user_id": user_item["user_id"],
                 "username": user_item.get("username"),
                 "password": user_item.get("password"),
-                "interested_in": interested_in_item[1],
+                "interested_in": (
+                    interested_in
+                    if interested_in and len(interested_in) > 0
+                    else []
+                ),
             }
             return result
         else:
