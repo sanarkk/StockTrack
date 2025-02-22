@@ -148,7 +148,6 @@ async def send_message(request: MessageRequest):
                 text=(
                     f"Hello, fresh news have been posted about: {request.article['stock_ticker']}.\n\n"
                     + f"{request.article['title']}\n\n"
-                    + f"{request.article['article_text']}\n\n"
                     + f"Published at: {request.article['publish_date']}\n"
                     + f"Published by: {request.article['news_source']}\n"
                 ),
