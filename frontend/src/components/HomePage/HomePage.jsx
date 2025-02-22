@@ -16,9 +16,10 @@ import {ArticleContext} from '../../contexts/article_context';
 import green_arrow from "./svgs/up.svg"
 import red_arrow from "./svgs/down.svg"
 import LineChart from "./LineChart";
+import { useQuery } from 'react-query';
 
 const HomePage = () => {
-    const {username, user_id, interested_in} = useContext(UserContext)
+    const {username, user_id, interested_in, logout} = useContext(UserContext)
     const [isModalOpen, setIsModalOpen] = useState(interested_in.length === 0?true:false);
     const [search, set_search] = useState("");
     const [stocks, set_stocks] = useState([]);
@@ -32,6 +33,7 @@ const HomePage = () => {
     useEffect(() => {
         getArticles()
     }, [])
+
     useEffect(() => {
         set_display_article(articles[0])
     }, [articles])
@@ -44,6 +46,12 @@ const HomePage = () => {
     useEffect(() => {
         console.log(stock_data)
     }, [stock_data])
+
+    useQuery({
+        queryKey: ["articles"], // Unique key for caching
+        queryFn: getArticles
+     
+      });
 
     return (
         <div className={styles.wrapper}>
@@ -74,8 +82,8 @@ const HomePage = () => {
                         ))
                     }
                 </div>
-                <div className={styles['logout-container']}>
-                    <Link className={styles['logout-btn']}><img src={LogoutIcon} alt="Logout icon"/> Logout</Link>
+                <div  className={styles['logout-container']}>
+                    <button onClick={()=>{logout()}} className={styles['logout-btn']}><img src={LogoutIcon} alt="Logout icon" /> Logout</button>
                 </div>
             </div>
             <div className={styles['main-container']}>
@@ -138,7 +146,14 @@ const HomePage = () => {
                             <p>
                                 {display_article ? display_article.article_text : ""}
                             </p>
+                            
                         </div>
+                        <div className={styles['article-btn-container']}>
+                            {display_article&&
+                       <    Link className={styles['check-article-button']} target='_blank' to={display_article.url}>See full article</Link>
+                            }
+                        </div>
+                        
                     </div>
                 </div>
             </div>

@@ -54,7 +54,7 @@ export const get = async(route)=>{
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
-		return {data:null, status_code:error.response.status, error:error.response.data.detail}; 
+		return {data:null, status_code:("response" in error)?error.response.status:1, error:"response" in error?error.response.data.detail:"something went wrong"}; 
 	}
 }
 
@@ -65,7 +65,7 @@ export const post = async(route, data)=>{
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
-		return {data:null, status_code:error.response?error.response.status:1, error:error.response?error.response.data.detail:"something went wrong"}; 
+		return {data:null, status_code:("response" in error)?error.response.status:1, error:"response" in error?error.response.data.detail:"something went wrong"}; 
 	}
 
 }
@@ -76,7 +76,7 @@ export const put = async(route, data)=>{
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
-		return {data:null, status_code:error.response.status, error:error.response.data.detail}; 
+		return {data:null, status_code:("response" in error)?error.response.status:1, error:"response" in error?error.response.data.detail:"something went wrong"}; 
 	}
 
 }
@@ -87,7 +87,7 @@ export const _delete = async(route)=>{
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
-		return {data:null, status_code:error.response.status, error:error.response.data.detail}; 
+		return {data:null, status_code:("response" in error)?error.response.status:1, error:"response" in error?error.response.data.detail:"something went wrong"}; 
 	}
 }
 

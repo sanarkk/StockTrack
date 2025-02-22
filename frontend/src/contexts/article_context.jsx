@@ -1,5 +1,6 @@
 import { createContext, useState, useContext, useEffect } from "react";
 import toast from "react-hot-toast";
+import {useQuery} from "@tanstack/react-query"
 import { get, put, _delete, post } from "../api/api";
 import { UserContext } from "./user_context";
 import { data } from "react-router";
@@ -14,6 +15,10 @@ const ArticleContextProvider = ({ children }) => {
     useEffect(() => {
         console.log("Articles updated:", articles);
     }, [articles]); // This effect runs whenever `articles` changes
+
+
+ 
+
 
     const getArticles = async () => {
         const res = await get(`processed_articles`);
