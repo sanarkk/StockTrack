@@ -45,7 +45,7 @@ export const get = async(route)=>{
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
-		return {data:null, status_code:1, error:error}; 
+		return {data:null, status_code:error.response.status, error:error.response.data.detail}; 
 	}
 }
 
@@ -57,7 +57,8 @@ export const post = async(route, data)=>{
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
-		return {data:null, status_code:1, error:error}; 
+		
+		return {data:null, status_code:error.response.status, error:error.response.data.detail}; 
 	}
 
 }
@@ -68,7 +69,7 @@ export const put = async(route, data)=>{
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
-		return {data:null, status_code:1, error:error}; 
+		return {data:null, status_code:error.response.status, error:error.response.data.detail}; 
 	}
 
 }
@@ -79,7 +80,7 @@ export const _delete = async(route)=>{
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
-		return {data:null, status_code:1, error:error}; 
+		return {data:null, status_code:error.response.status, error:error.response.data.detail}; 
 	}
 }
 
