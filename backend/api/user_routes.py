@@ -85,6 +85,7 @@ async def save_stock_preferences(
     data: list[str],
     current_user: str = Depends(get_current_user),
 ):
+    print(current_user)
     user = get_user_by_username(current_user)
     if not user:
         raise HTTPException(status_code=401, detail="Account does not exist")
@@ -96,17 +97,15 @@ async def save_stock_preferences(
         )
         if len(ticker_db["Items"]) != 0:
             tickers_data.append(ticker_db["Items"][0])
-    print(tickers_data)
     update_response = users_table.update_item(
         Key={"user_id": user["user_id"]},  # Primary Key
         UpdateExpression="SET interested_in = :interested_in",
         ExpressionAttributeValues={":interested_in": tickers_data},
         ReturnValues="UPDATED_NEW",
     )
-    print(user)
+
     user = get_user_by_username(current_user)
-    print(user)
-    return user
+    return update_response
 
 
 @router.get("/get_tickers/")
