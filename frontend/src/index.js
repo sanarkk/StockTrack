@@ -22,6 +22,7 @@ import "./index.css";
 import LoginPage from "./components/LoginPage/LoginPage";
 import UserContextProvider from "./contexts/user_context.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {Toaster} from "react-hot-toast"
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,7 @@ root.render(
   <React.StrictMode>
     <UserContextProvider> 
       <RouterProvider router={router} />
+      <Toaster/> 
     </UserContextProvider>
   </React.StrictMode>
 );

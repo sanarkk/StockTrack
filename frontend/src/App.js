@@ -1,7 +1,6 @@
 import './App.css';
 import LoginPage from "./components/LoginPage/LoginPage.jsx";
 
-import {Toaster} from "react-hot-toast"
 
 
 function App() {
@@ -10,7 +9,7 @@ function App() {
       <>
   
         <LoginPage/>
-        <Toaster/> 
+      
       
       </>
     

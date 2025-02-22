@@ -1,5 +1,5 @@
 import axios from "axios"; 
-const BASE_URL = "http://127.0.0.1:8001/" //should be in an env file 
+const BASE_URL = "http://127.0.0.1:8001" //should be in an env file 
 const GENERIC_TOKEN = "1234"
 
 const client = axios.create({
@@ -9,14 +9,19 @@ const client = axios.create({
 client.interceptors.request.use((config)=>{
 	try{
 		let token = window.localStorage.getItem("token"); 
-		if(token && typeof(token) === "string" ){
-			config.headers["auth"] = token; 
-		}
-		else{
-			//store generic token in request headers
-			config.headers["auth"] = GENERIC_TOKEN; 
+		// if(token && typeof(token) === "string" ){
+		// 	//config.headers["auth"] = token; 
+		// }
+		// else{
+		// 	//store generic token in request headers
+		// 	//config.headers["token"] = GENERIC_TOKEN; 
+			
+    	
+		
+		// } 
+		config.headers['Content-Type'] = 'application/json'; 
 		return config; 
-		} 
+		
 	}
 	catch (error) {
 		return Promise.reject(error); 
@@ -36,7 +41,7 @@ client.interceptors.request.use((config)=>{
 
 export const get = async(route)=>{
 	try{
-		const res = await client.get(`/${route}`); 
+		const res = await client.get(route); 
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
@@ -47,8 +52,8 @@ export const get = async(route)=>{
 
 export const post = async(route, data)=>{
 	try{
-		console.log("requesting post method called")
-		const res = await client.post(`/${route}`,data); 
+		console.log(route)
+		const res = await client.post(`${route}`,data); 
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
@@ -59,7 +64,7 @@ export const post = async(route, data)=>{
 
 export const put = async(route, data)=>{
 	try{
-		const res = await client.put(`/${route}`,data); 
+		const res = await client.put(`${route}`,data); 
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){
@@ -70,7 +75,7 @@ export const put = async(route, data)=>{
 
 export const _delete = async(route)=>{
 	try{
-		const res = await client.delete(`/${route}`); 
+		const res = await client.delete(`${route}`); 
 		return {data:res.data, status_code: res.status, error:res.status>=400?res.data.detail.msg:null}; 
 	}
 	catch(error){

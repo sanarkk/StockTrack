@@ -17,8 +17,7 @@ const UserContextProvider = ({children})=>{
         payload["chat_id"] = ""; 
         payload["interested_in"] = []; 
         payload["date"] = new Date(); 
-        const res = await post("/register",payload); 
-        console.log(res)
+        const res = await post("http://127.0.0.1:8000/register",payload); 
         if(res.data){
             toast.success("Registration successful")
             setUsername(res.data.username) 
@@ -33,7 +32,7 @@ const UserContextProvider = ({children})=>{
     const login = async (payload)=>{
         toast.promise(
             async () => {
-                const res = await post("/token",{username:payload.username, password:payload.password}); 
+                const res = await post("token",{username:payload.username, password:payload.password}); 
                 if(res.data){
                     //navigate("/home")
                     console.log("navigate")
