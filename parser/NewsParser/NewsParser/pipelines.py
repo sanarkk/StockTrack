@@ -63,17 +63,19 @@ class DynamoDBPipeline:
             )
 
             payload = {
-                'url': item.get('url'),
-                'title': item.get('title'),
-                'publish_date': item.get('publish_date'),
-                'article_text': item.get('article_text'),
-                'stock_ticker': item.get('stock_ticker'),
-                'news_source': item.get('news_source'),
-                'index_key': item.get('index_key'),
-                'parsing_date': item.get('parsing_date')
+                "url": item.get("url", "Unkown"),
+                "title": item.get("title", "Unkown"),
+                "publish_date": item.get("publish_date", "Unkown"),
+                "article_text": item.get("article_text", "Unkown"),
+                "stock_ticker": item.get("stock_ticker", "Unkown"),
+                "news_source": item.get("news_source", "Unkown"),
+                "index_key": item.get("index_key", "0"),
+                "parsing_date": item.get("parsing_date", "Unkown"),
             }
 
-            requests.post("http://localhost:8000/send_message", payload)
+            requests.post(
+                "http://localhost:8000/send_message/", json=payload
+            )
 
             spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
         except ClientError as e:
