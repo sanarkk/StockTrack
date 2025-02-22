@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.user_routes import router as user_router
-from api.user_routes import router as bot_router
+from api.chatbot_routes import router as bot_router
 
 app = FastAPI()
 

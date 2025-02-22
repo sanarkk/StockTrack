@@ -96,13 +96,16 @@ async def save_stock_preferences(
         )
         if len(ticker_db["Items"]) != 0:
             tickers_data.append(ticker_db["Items"][0])
+    print(tickers_data)
     update_response = users_table.update_item(
         Key={"user_id": user["user_id"]},  # Primary Key
-        UpdateExpression="SET interested_in = :new_list",
-        ExpressionAttributeValues={":new_list": tickers_data},
+        UpdateExpression="SET interested_in = :interested_in",
+        ExpressionAttributeValues={":interested_in": tickers_data},
         ReturnValues="UPDATED_NEW",
     )
+    print(user)
     user = get_user_by_username(current_user)
+    print(user)
     return user
 
 
