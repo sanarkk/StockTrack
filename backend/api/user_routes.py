@@ -6,13 +6,14 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from config import SECRET_KEY
+from services.token import verify_token, get_current_user
 from database.dynamodb import users_table, stock_tickers_name
 from models.user_models import UserCreate, User, LoginRequest
 from services.user_services import get_user_by_username, create_user
 from auth.auth import get_password_hash, verify_password, create_access_token
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token/")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token/swagger")
 
 
 @router.post("/register/", response_model=User)
@@ -35,7 +36,21 @@ async def register_user(user: UserCreate):
 @router.post("/token/")
 async def login_user(form_data: LoginRequest):
     user = get_user_by_username(form_data.username)
-    print(user)
+    if not user or not verify_password(form_data.password, user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    access_token = create_access_token(data={"sub": form_data.username})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "username": user["username"],
+        "interested_in": user["interested_in"],
+    }
+
+
+# Route to handle swagger token auth
+@router.post("/token/swagger")
+async def login_user_swagger(form_data: OAuth2PasswordRequestForm = Depends()):
+    user = get_user_by_username(form_data.username)
     if not user or not verify_password(form_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token = create_access_token(data={"sub": form_data.username})
@@ -48,7 +63,7 @@ async def login_user(form_data: LoginRequest):
 
 
 @router.post("/search/")
-async def find_stock(data: str):
+async def find_stock(data: str, current_user: str = Depends(get_current_user)):
     response = stock_tickers_name.scan(
         FilterExpression="begins_with(ticker, :data)",
         ExpressionAttributeValues={":data": data},
@@ -57,8 +72,12 @@ async def find_stock(data: str):
 
 
 @router.post("/stock_preferences/")
-async def save_stock_preferences(username: str, data: list[str]):
-    user = get_user_by_username(username)
+async def save_stock_preferences(
+    username: str,
+    data: list[str],
+    current_user: str = Depends(get_current_user),
+):
+    user = get_user_by_username(current_user)
     if not user:
         raise HTTPException(status_code=401, detail="Account does not exist")
     tickers_data = []
@@ -75,18 +94,23 @@ async def save_stock_preferences(username: str, data: list[str]):
         ExpressionAttributeValues={":new_list": tickers_data},
         ReturnValues="UPDATED_NEW",
     )
-    user = get_user_by_username(username)
+    user = get_user_by_username(current_user)
     return user
 
 
 @router.get("/get_tickers/")
-async def get_user_tickers(username: str):
-    user = get_user_by_username(username)
+async def get_user_tickers(
+    username: str, current_user: str = Depends(get_current_user)
+):
+    user = get_user_by_username(current_user)
     return user["interested_in"]
 
 
 @router.get("/get_user_info/")
-async def get_user_info(username: str):
-    user = get_user_by_username(username)
-    user["password"] = None
-    return user
+async def get_user_info(
+    username: str, current_user: str = Depends(get_current_user)
+):
+    if current_user:
+        user = get_user_by_username(current_user)
+        user["password"] = None
+        return user
