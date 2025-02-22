@@ -12,6 +12,9 @@ import {StocksContext} from "../../contexts/stocks_context";
 import SecondStockList from "./SecondStockList/SecondStockList";
 import Logo from "../../assets/logo.png"
 import AddIcon from "../../assets/icons/add.png"
+import { ArticleContext } from '../../contexts/article_context';
+import green_arrow from "./svgs/up.svg"
+import red_arrow from "./svgs/down.svg"
 
 const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,9 +22,13 @@ const HomePage = () => {
     const [search, set_search] = useState("");
     const [stocks, set_stocks] = useState([]);
     const {getSuggestions, set_selected_stocks, selected_stocks} = useContext(StocksContext)
+    const {articles, getArticles} = useContext(ArticleContext)
     useEffect(() => {
         getSuggestions(search, set_stocks)
     }, [search]);
+    useEffect(()=>{
+        getArticles()
+    },[])
     return (
         <div className={styles.wrapper}>
             <div className={styles.sidebar}>
@@ -66,307 +73,41 @@ const HomePage = () => {
                     {/*<button onClick={() => setIsModalOpen(true)}>Open Modal</button>*/}
                     {/*<ChooseStocksModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}/>*/}
                     <div className={styles['articles-card-container']}>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
+                    {
+                        
+                        articles.map((article)=>( 
+                            <div className={styles['article-card']}>
+                                <div className={styles['stock-info']}>
+                                    <p className={styles['stock-short-name']}>
+                                       {article.stock_ticker}
                                     </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
+                                    <p className={styles['stock-full-name']}>
+                                        Artificial And Big Type Script
                                     </p>
+                                    <img style={{width:"35px",height:"35px"}} src={article.sentiment=="POSITIVE"?green_arrow:red_arrow} alt="" />
+                                </div>
+                                <div className={styles.bar}/>
+                                <div className={styles['article-info']}>
+                                    <p className={styles['article-title']}>
+                                        {article.title}
+                                    </p>
+                                    <p className={styles['stock-short-description']}>
+                                        {article.summary}
+                                    </p>
+                                    <div className={styles['stock-details']}>
+                                        <p className={styles.author}>
+                                            {article.news_source}
+                                        </p>
+                                        <p className={styles['stock-date']}>
+                                            {article.publish_date}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles['article-card']}>
-                            <div className={styles['stock-info']}>
-                                <p className={styles['stock-short-name']}>
-                                    AABTS
-                                </p>
-                                <p className={styles['stock-full-name']}>
-                                    Artificial And Big Type Script
-                                </p>
-                                <p className={styles['stock-price']}>
-                                    115.5$
-                                </p>
-                            </div>
-                            <div className={styles.bar}/>
-                            <div className={styles['article-info']}>
-                                <p className={styles['article-title']}>
-                                    Hay When You Need It
-                                </p>
-                                <p className={styles['stock-short-description']}>
-                                    "Agriculture is the most healthful, most useful and most noble employment of man."
-                                </p>
-                                <div className={styles['stock-details']}>
-                                    <p className={styles.author}>
-                                        George Washington
-                                    </p>
-                                    <p className={styles['stock-date']}>
-                                        Thursday 09 2022
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                       ))
+                   
+}
+</div>
                     <div className={styles['stock-article']}>
                         <div className={styles['stock-article-text']}>
                             <p>

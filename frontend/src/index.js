@@ -7,6 +7,7 @@ import StocksContextProvider from "./contexts/stocks_context.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import HomePage from "./components/HomePage/HomePage.jsx";
+import ArticleContextProvider from "./contexts/article_context.jsx";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -14,6 +15,7 @@ root.render(
      <BrowserRouter> {/* ✅ Wrap everything inside BrowserRouter */}
     <UserContextProvider>
         <StocksContextProvider>
+          <ArticleContextProvider>
      
         <Routes>
           <Route path="/" element={<LoginPage />} />
@@ -21,6 +23,7 @@ root.render(
         </Routes>
      
       <Toaster />
+      </ArticleContextProvider>
       </StocksContextProvider>
     </UserContextProvider>
     </BrowserRouter>
