@@ -9,11 +9,12 @@ const StocksContextProvider = ({children})=>{
     const [stocks_list, set_stock_list] = useState([])
     const [stock_suggestions, set_stock_suggestions] = useState([]); 
     const [stock_suggestions_status, set_stock_suggestions_status] = useState(false)
+    const [selected_stocks, set_selected_stocks] = useState([])
     
     const getSuggestions = async (searchInput)=>{
-        const res = await get(`stock_suggestions?query=${searchInput}`); 
+        const res = await post(`search?data=${searchInput}`); 
         if(res.data){
-            set_stock_suggestions(res.data); 
+            set_stock_suggestions(res.data.Items); 
         }
         else if (res.status_code != 1){
             set_stock_suggestions_status(false); 
@@ -36,7 +37,7 @@ const StocksContextProvider = ({children})=>{
     return(
         <StocksContext.Provider
             value={{
-                stocks_list, stock_suggestions, stock_suggestions_status, getSuggestions, set_stock_suggestions       
+                stocks_list, stock_suggestions, stock_suggestions_status, getSuggestions, set_stock_suggestions, selected_stocks, set_selected_stocks       
             }}
         >
             {children}

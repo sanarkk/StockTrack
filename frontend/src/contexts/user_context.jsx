@@ -39,7 +39,10 @@ const UserContextProvider = ({children})=>{
         toast.promise(
             async () => {
                 const res = await post("token",payload); 
+
                 if(res.data){
+                    setUsername(res.data.username) 
+                    set_user_id(res.data.user_id)
                     navigate("/home")
 
                 }

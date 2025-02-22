@@ -3,6 +3,7 @@ import styles from "./ChooseStocksModal.module.scss";
 import SearchIcon from "../../../assets/icons/searchIcon.png";
 
 const ChooseStocksModal = ({isOpen, onClose}) => {
+    
     if (!isOpen) return null;
 
     const requestForStock = (e) => {

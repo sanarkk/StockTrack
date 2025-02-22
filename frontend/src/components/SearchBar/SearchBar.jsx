@@ -4,36 +4,21 @@ import { StocksContext } from "../../contexts/stocks_context";
 
 const SearchBar = () => {
     const [searchInput, setSearchInput] = useState("");
-    const {getSuggestions, stock_suggestions_status, stock_suggestions, stock_lists, set_stock_suggestions} = useContext(StocksContext); 
-    const [selectedWords, setSelectedWords] = useState([]);
+    const {getSuggestions, stock_suggestions_status, stock_suggestions, stock_lists, set_stock_suggestions, selected_stocks, set_selected_stocks} = useContext(StocksContext); 
 
     useEffect(() => {
+        console.log("eee")
         getSuggestions(searchInput); 
-        // if (searchInput.length > 0) {
-        //     // Make request to backend as the user types
-        //     const fetchSuggestions = async () => {
-        //         try {
-        //             const response = await axios.get(`/api/words?query=${searchInput}`);
-        //             setSuggestions(response.data); // Assuming backend returns an array of words
-        //         } catch (error) {
-        //             console.error("Error fetching suggestions:", error);
-        //         }
-        //     };
-
-        //     fetchSuggestions();
-        // } else {
-        //     setSuggestions([]); // Clear suggestions if input is empty
-        // }
     }, [searchInput]);
 
-    const handleSelectWord = (word) => {
-        setSelectedWords((prevWords) => [...prevWords, word]);
+    const handleSelectStock = (word) => {
+        set_selected_stocks([...selected_stocks, word]);
         setSearchInput(""); // Optionally clear search input after selecting
         set_stock_suggestions([]); // Clear suggestions after selection
     };
 
-    const handleRemoveWord = (word) => {
-        setSelectedWords((prevWords) => prevWords.filter((w) => w !== word));
+    const handleRemoveStock = (word) => {
+        set_selected_stocks(selected_stocks.filter((w) => w !== word));
     };
 
     return (
@@ -48,23 +33,23 @@ const SearchBar = () => {
 
             {searchInput && (
                 <ul className={styles.suggestionsList}>
-                    {suggestions.map((word, index) => (
+                    {stock_suggestions.map((word, index) => (
                         <li
                             key={index}
                             className={styles.suggestionItem}
-                            onClick={() => handleSelectWord(word)}
+                            onClick={() => handleSelectStock(word)}
                         >
-                            {word}
+                            {word.username}
                         </li>
                     ))}
                 </ul>
             )}
 
             <div className={styles.selectedWords}>
-                {selectedWords.map((word, index) => (
+                {selected_stocks.map((word, index) => (
                     <div key={index} className={styles.selectedWord}>
-                        <span>{word}</span>
-                        <button onClick={() => handleRemoveWord(word)} className={styles.removeBtn}>×</button>
+                        <span>{word.username}</span>
+                        <button onClick={() => handleRemoveStock(word)} className={styles.removeBtn}>Remove Stock</button>
                     </div>
                 ))}
             </div>

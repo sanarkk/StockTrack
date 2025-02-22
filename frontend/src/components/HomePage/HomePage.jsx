@@ -6,6 +6,7 @@ import SearchIcon from '../../assets/icons/searchIcon.png'
 import SortByDateDropdown from "./SortByDateDropdown/SortByDateDropdown";
 import ChooseStocksModal from "./ChooseStocksModal/ChooseStocksModal";
 import { UserContext } from '../../contexts/user_context';
+import SearchBar from '../SearchBar/SearchBar';
 
 const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,11 +28,7 @@ const HomePage = () => {
                 <div className={styles.header}>
                     <div className={styles['sort-container']}>
                         <SortByDateDropdown/>
-                        <div className={styles['sort-by-stock-container']}>
-                            <img src={SearchIcon} alt=""/>
-                            <input type="text" placeholder="Search by stock..."
-                                   className={styles['sort-by-stock-input']}/>
-                        </div>
+                       <SearchBar/>
                     </div>
                     <p className={styles.username}>Welcome back, <span>{username}</span></p>
                 </div>
