@@ -73,7 +73,7 @@ class DynamoDBPipeline:
                 'parsing_date': item.get('parsing_date')
             }
 
-            # requests.post("http://localhost:8001/send_message", payload)
+            requests.post("http://localhost:8000/send_message", payload)
 
             spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
         except ClientError as e:
