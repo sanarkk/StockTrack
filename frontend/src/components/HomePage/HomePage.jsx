@@ -45,7 +45,7 @@ const HomePage = () => {
                     {
                         interested_in.map((item, index) => (
                             <div className={styles.stock}>
-                                <span key={index}>{item.stock_name}</span>
+                                <span className={styles['stock-ticker']} key={index}>{item.ticker} </span> <span>|</span> <span className={styles['stock-name']}>{item.stock_name}</span>
                             </div>
                         ))
                     }

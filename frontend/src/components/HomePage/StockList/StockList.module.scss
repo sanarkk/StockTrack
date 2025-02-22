@@ -5,6 +5,7 @@
   max-height: 480px; // Set a fixed height for the container
   overflow-y: auto; // Enable vertical scrolling
   padding: 8px; // Optional for spacing
+  margin-top: 12px;
 }
 
 .stock-list-item {
@@ -21,6 +22,16 @@
   overflow: hidden; // Prevents content from overflowing
   border-radius: 8px;
   cursor: pointer;
+
+  .stock-ticker {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .stock-name {
+    font-size: 16px;
+    font-weight: 400;
+  }
 }
 
 .selected-stock-list-item {
