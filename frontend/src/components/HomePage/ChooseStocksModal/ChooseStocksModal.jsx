@@ -36,18 +36,24 @@ const ChooseStocksModal = ({setIsModalOpen}) => {
     return (
         <div className={styles.overlay}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                <div className={styles["close-btn-container"]}>
-                    <button onClick={() =>setIsModalOpen(false)} className={styles['close-btn']}>
-                        Close
-                    </button>
-                </div>
                 <div className={styles['stocks-container']}>
-                <SearchBar search_state={search_state} set_search_state={set_search_state}/>
+                    <SearchBar search_state={search_state} set_search_state={set_search_state}/>
                     <StockList stocks={suggestions} selected_stocks={selected_stocks}
-                               handleSelectStock={handleSelectStock} interested_in={interested_in} />
+                               handleSelectStock={handleSelectStock} interested_in={interested_in}/>
                 </div>
-                <div className={styles['continue-btn-container']}>
-                    <button className={styles.closeBtn} onClick={() =>{ saveSelectedStocks();setIsModalOpen(false)}}>Update Stocks</button>
+                <div className={styles['buttons']}>
+                    <div className={styles['continue-btn-container']}>
+                        <button className={styles.closeBtn} onClick={() => {
+                            saveSelectedStocks();
+                            setIsModalOpen(false)
+                        }}>Update Stocks
+                        </button>
+                    </div>
+                    <div className={styles["close-btn-container"]}>
+                        <button onClick={() => setIsModalOpen(false)} className={styles['close-btn']}>
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
