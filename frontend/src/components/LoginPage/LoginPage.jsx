@@ -108,9 +108,9 @@ const LoginPage = () => {
                             <p className={styles['error-message']}>{errorMessage}</p>
                         </form>
                         <div className={styles['submit-btn-container']}>
-                            <button className={styles['submit-btn']}>
+                            <Link to="/home" className={styles['submit-btn']}>
                                 Register
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -153,9 +153,9 @@ const LoginPage = () => {
                                 </button>
                             </div>
                             <div className={styles['submit-btn-container']}>
-                                <button className={styles['submit-btn']}>
+                                <Link to="/home" className={styles['submit-btn']}>
                                     Login
-                                </button>
+                                </Link>
                             </div>
                         </form>
                     </div>
