@@ -1,11 +1,30 @@
 import scrapy
+import subprocess
 from NewsParser.items import BusinessInsiderItem
+import os
+import sys
 
 class BusinessinsiderSpider(scrapy.Spider):
     name = "businessinsider"
     allowed_domains = ["markets.businessinsider.com"]
     page_number = 1
     
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Get the absolute path of parseProxies.py
+        proxy_script_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "../../parseProxies.py")
+        )
+        self.logger.info(f"Using proxy script at: {proxy_script_path}")
+
+        # Use Python from virtual environment
+        python_executable = sys.executable
+        self.logger.info(f"Using Python executable at: {python_executable}")
+
+        # Run the script using the virtual environment
+        subprocess.run([python_executable, proxy_script_path], check=True)
+
     def start_requests(self):
         yield scrapy.Request(f'https://markets.businessinsider.com/news?p={self.page_number}&', self.parse)
 
