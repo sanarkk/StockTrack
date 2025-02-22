@@ -328,3 +328,33 @@
   height: 50px;
   border-bottom: 2px solid #e9e9e9;
 }
+
+.article-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.check-article-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  width: 200px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 8px 12px;
+  font-size: 16px;
+  background-color: #000000;
+  color: #ffffff;
+  gap: 8px;
+  transition: 0.2s;
+
+  &:hover {
+    transform: scale(1.03);
+    transition: 0.1s;
+  }
+}

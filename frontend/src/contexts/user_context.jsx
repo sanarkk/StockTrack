@@ -43,7 +43,9 @@ const UserContextProvider = ({children})=>{
     }; 
 
     const logout = async ()=>{
-
+        window.localStorage.removeItem("token")
+        navigate("/",{replace:true})
+        toast.success("logged out")
     }
 
     const login = async (payload)=>{
@@ -90,7 +92,7 @@ const UserContextProvider = ({children})=>{
     return(
         <UserContext.Provider
             value={{
-                login, register, username, user_id, interested_in, refresh_user
+                login, register, username, user_id, interested_in, logout
             }}
         >
             {children}

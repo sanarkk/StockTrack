@@ -50,19 +50,29 @@ const LineChart = () => {
   const {stock_data} = useContext(ArticleContext)
   console.log(stock_data)
   const dates = stock_data.map((item) => {return item.date})
-  const prices = stock_data.map((item) => {return item.open})
+  const low_prices = stock_data.map((item) => {return item.low})
+  const high_prices = stock_data.map((item) => {return item.high})
+  
 
 
   const data = {
     labels: dates,
     datasets: [
       {
-        label: "Ticker Price",
-        data: prices,
+        label: "Low Price",
+        data: low_prices,
         fill: false,
         borderColor: "rgb(255, 0, 0)",
         tension: 0.1,
       },
+      {
+        label: "High Price",
+        data: high_prices,
+        fill: false,
+        borderColor: "rgb(0, 255, 0)",
+        tension: 0.1,
+      },
+ 
     ],
   };
   return <Line data={data} options={options} />;
