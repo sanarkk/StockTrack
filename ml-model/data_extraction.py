@@ -1,115 +1,107 @@
 import pandas as pd
 from transformers import pipeline
 import boto3
+import csv
+from decimal import Decimal
+import uuid
+import uvicorn
+from fastapi import FastAPI
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 import os
 
+# Load environment variables
 load_dotenv()
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "*",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-def read_latest_processed_index():
-    try:
-        df = pd.read_csv("preprocessed_data.csv", usecols=["index_key"])
-        if not df.empty:
-            return df["index_key"].max()
-    except FileNotFoundError:
-        print("No existing preprocessed data found. Starting fresh.")
-    return None
+dynamodb = boto3.resource(
+    "dynamodb",
+    region_name=os.getenv("AWS_REGION_NAME"),
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+)
+processed_articles_table = dynamodb.Table("ProcessedArticles")
 
-def read_new_data_from_database(last_index_key):
-    dynamodb = boto3.resource(
-        'dynamodb',
-        region_name=os.getenv("AWS_REGION_NAME"),
-        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
-    )
-    table = dynamodb.Table('InsiderArticles')
 
-    try:
-        response = table.scan()
-        items = response['Items']
-        df = pd.DataFrame(items)
+class Article(BaseModel):
+    url: str
+    title: str
+    publish_date: str
+    article_text: str
+    stock_ticker: str
+    news_source: str
+    index_key: int
+    parsing_date: str
 
-        if df.empty:
-            print("No data found in DynamoDB.")
-            return df
 
-        df["index_key"] = df["index_key"].astype(int)
-
-        if last_index_key is not None:
-            last_index_key = int(last_index_key)
-            df = df[df["index_key"] > last_index_key]
-
-        print(f"Found {len(df)} new records in DynamoDB.")
-        return df
-    except ClientError as e:
-        print("Error reading from DynamoDB:", e)
-        return pd.DataFrame()
-
-def get_sentiments(articles):
+def get_sentiment(article_text):
     print("Starting sentiment analysis...")
-    sentiment_pipeline = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
-    results = []
-    for i, article in enumerate(articles):
-        print(f"Analyzing sentiment for article {i + 1}/{len(articles)}...")
-        result = sentiment_pipeline(article[:512])[0]
-        results.append({"label": result['label'], "score": result['score']})
+    sentiment_pipeline = pipeline(
+        "sentiment-analysis",
+        model="distilbert-base-uncased-finetuned-sst-2-english",
+    )
+    result = sentiment_pipeline(article_text[:512])[0]
     print("Sentiment analysis complete.")
-    return results
+    return {"label": result["label"], "score": result["score"]}
 
-def summarize_articles(articles):
+
+def summarize_article(article_text):
     print("Starting summarization...")
     summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-    summaries = []
-    for i, article in enumerate(articles):
-        print(f"Summarizing article {i + 1}/{len(articles)}...")
-        summary = summarizer(article[:1024], max_length=150, min_length=30, do_sample=False)[0]['summary_text']
-        summaries.append(summary)
+    summary = summarizer(
+        article_text[:1024], max_length=150, min_length=30, do_sample=False
+    )[0]["summary_text"]
     print("Summarization complete.")
-    return summaries
+    return summary
 
-def analyze_articles(articles):
+
+def analyze_article(article_text):
     print("Starting detailed analysis...")
     analysis_pipeline = pipeline("text-generation", model="gpt2")
-    analyses = []
-    for i, article in enumerate(articles):
-        print(f"Analyzing article {i + 1}/{len(articles)}...")
-        # Directly generate analysis without additional text
-        analysis = analysis_pipeline(article[:512], max_length=200, num_return_sequences=1)[0]['generated_text']
-        analyses.append(analysis)
+    analysis = analysis_pipeline(
+        article_text[:512], max_length=200, num_return_sequences=1
+    )[0]["generated_text"]
     print("Detailed analysis complete.")
-    return analyses
+    return analysis
 
-def preprocess_data():
-    print("Starting data preprocessing...")
 
-    last_index_key = read_latest_processed_index()
-    print(f"Last processed index: {last_index_key}")
+@app.post("/process_article/")
+def process_article(article: Article):
+    print("Starting article processing...")
 
-    new_data = read_new_data_from_database(last_index_key)
+    # Parse the input JSON
+    # Perform sentiment analysis, summarization, and detailed analysis
+    sentiment = get_sentiment(article.article_text)
+    summary = summarize_article(article.article_text)
+    analysis = analyze_article(article.article_text)
 
-    if new_data.empty:
-        print("No new data found. Exiting.")
-        return
+    article = article.dict()
+    # Add processed fields to the article
+    article["sentiment"] = sentiment["label"]
+    article["sentiment_score"] = Decimal(str(sentiment["score"]))
+    article["summary"] = summary
+    article["analysis"] = analysis
+    article["id"] = str(uuid.uuid4())
 
-    print(f"Processing {len(new_data)} new articles...")
-
-    print("Performing sentiment analysis...")
-    sentiments = get_sentiments(new_data['article_text'].tolist())
-    new_data['sentiment'] = [s['label'] for s in sentiments]
-    new_data['sentiment_score'] = [s['score'] for s in sentiments]
-
-    print("Performing summarization...")
-    new_data['summary'] = summarize_articles(new_data['article_text'].tolist())
-
-    print("Performing detailed analysis...")
-    new_data['analysis'] = analyze_articles(new_data['article_text'].tolist())
-
-    print("Appending new data to CSV...")
-    new_data.to_csv("preprocessed_data.csv", mode='a', header=not os.path.exists("preprocessed_data.csv"), index=False)
-
-    print(f"Processed {len(new_data)} new articles and appended to 'preprocessed_data.csv'.")
+    # Append new processed data to the file
+    processed_articles_table.put_item(Item=article)
     print("Preprocessing complete.")
 
+
+def run_app():
+    uvicorn.run(app, host="0.0.0.0", port=8006)
+
+
 if __name__ == "__main__":
-    preprocess_data()
+    run_app()
