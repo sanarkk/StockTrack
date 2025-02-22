@@ -28,18 +28,25 @@ const HomePage = () => {
     const {articles, getArticles, getStockData, stock_data} = useContext(ArticleContext)
     const [display_article, set_display_article] = useState(articles[0])
     const [qrCodeOpened, set_qrCodeOpened] = useState(false)
+    const [actual_display, set_actual_display] = useState(articles)
 
     const [TelegramLinkForChatBot, setTelegramLinkForChatBot] = useState("t.me/StockTrackNotifications_bot");
 
+    
+
     useEffect(() => {
-        getSuggestions(search, set_stocks)
+        let temp_article = articles.filter((article)=>{return article.stock_ticker.toLowerCase().includes(search.toLowerCase())})
+        set_actual_display(temp_article); 
+        console.log(temp_article,)
+
     }, [search]);
     useEffect(() => {
         getArticles()
     }, [])
-
+    
     useEffect(() => {
         set_display_article(articles[0])
+        set_actual_display(articles)
     }, [articles])
     useEffect(() => {
         if (display_article) {
@@ -118,7 +125,7 @@ const HomePage = () => {
                     <div className={styles['articles-card-container']}>
                         {
 
-                            articles.map((article) => (
+                            actual_display.map((article) => (
                                 <div onClick={() => {
                                     set_display_article(article)
                                 }} className={styles['article-card']}>
