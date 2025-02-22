@@ -18,7 +18,8 @@ const ArticleContextProvider = ({ children }) => {
     const getArticles = async () => {
         const res = await get(`processed_articles`);
         if (res.data) {
-            set_articles(res.data.Items); // State update is scheduled
+            let filtered_list = res.data.Items.filter((item)=> item.stock_ticker !== "Unkown")
+            set_articles(filtered_list ); // State update is scheduled
         } else {
             toast.error("Could not get articles");
         }
