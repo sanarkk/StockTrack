@@ -141,11 +141,15 @@ async def cancel(update: Update, context: CallbackContext):
 
 @app.post("/send_telegram_message/")
 async def send_message(request: MessageRequest):
+    print("HEREERE")
     try:
+        print("HEREERE")
         try:
+            print("HEREERE")
             result = await bot.bot.send_message(
                 chat_id=request.chat_id, text=request.article
             )
+            print("HEREERE")
             print("message was sent")
         except Exception as e:
             print(e)
