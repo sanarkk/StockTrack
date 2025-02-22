@@ -22,7 +22,17 @@ def get_user_by_username(
         )
         if "Items" in response and len(response["Items"]) > 0:
             user_item = response["Items"][0]
-            return user_item
+            latest_user = users_table.get_item(
+                Key={"user_id": user_item["id"]},
+                ConsistentRead=True,
+            )
+            result = {
+                "user_id": user_item["id"],
+                "username": user_item.get("username"),
+                "password": user_item.get("password"),
+                "interested_in": latest_user.get("Item", {}),
+            }
+            return result
         else:
             return False
     except ClientError as ce:
