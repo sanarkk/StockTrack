@@ -39,11 +39,17 @@ async def login_user(form_data: LoginRequest):
     if not user or not verify_password(form_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     access_token = create_access_token(data={"sub": form_data.username})
+    print(user["interested_in"])
+    print(user["interested_in"][0])
     return {
         "access_token": access_token,
         "token_type": "bearer",
         "username": user["username"],
-        "interested_in": user["interested_in"],
+        "interested_in": (
+            user["interested_in"][0]
+            if isinstance(user["interested_in"], tuple)
+            else user["interested_in"]
+        ),
     }
 
 
