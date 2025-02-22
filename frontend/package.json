@@ -11,6 +11,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
+    "chartjs": "^0.3.24",
     "heroicons": "^2.2.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
