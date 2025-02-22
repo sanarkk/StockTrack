@@ -12,9 +12,10 @@ import {StocksContext} from "../../contexts/stocks_context";
 import SecondStockList from "./SecondStockList/SecondStockList";
 import Logo from "../../assets/logo.png"
 import AddIcon from "../../assets/icons/add.png"
-import { ArticleContext } from '../../contexts/article_context';
+import {ArticleContext} from '../../contexts/article_context';
 import green_arrow from "./svgs/up.svg"
 import red_arrow from "./svgs/down.svg"
+import LineChart from "./LineChart";
 
 const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,22 +23,28 @@ const HomePage = () => {
     const [search, set_search] = useState("");
     const [stocks, set_stocks] = useState([]);
     const {getSuggestions, set_selected_stocks, selected_stocks} = useContext(StocksContext)
-    const {articles, getArticles, getStockData} = useContext(ArticleContext)
+    const {articles, getArticles, getStockData, stock_data} = useContext(ArticleContext)
     const [display_article, set_display_article] = useState(articles[0])
-    
+
     useEffect(() => {
         getSuggestions(search, set_stocks)
     }, [search]);
-    useEffect(()=>{
+    useEffect(() => {
         getArticles()
-    },[])
-    useEffect(()=>{
+    }, [])
+    useEffect(() => {
         set_display_article(articles[0])
-    },[articles])
-    useEffect(()=>{
-        getStockData(display_article.stock_ticker); 
-    },[display_article])
-    
+    }, [articles])
+    useEffect(() => {
+        if (display_article) {
+            getStockData(display_article.stock_ticker);
+            console.log(stock_data)
+        }
+    }, [display_article])
+    useEffect(() => {
+        console.log(stock_data)
+    }, [stock_data])
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.sidebar}>
@@ -61,7 +68,8 @@ const HomePage = () => {
                     {
                         interested_in.map((item, index) => (
                             <div className={styles.stock}>
-                                <span className={styles['stock-ticker']} key={index}>{item.ticker} </span> <span>|</span> <span className={styles['stock-name']}>{item.stock_name}</span>
+                                <span className={styles['stock-ticker']} key={index}>{item.ticker} </span>
+                                <span>|</span> <span className={styles['stock-name']}>{item.stock_name}</span>
                             </div>
                         ))
                     }
@@ -82,48 +90,53 @@ const HomePage = () => {
                     {/*<button onClick={() => setIsModalOpen(true)}>Open Modal</button>*/}
                     {/*<ChooseStocksModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}/>*/}
                     <div className={styles['articles-card-container']}>
-                    {
-                        
-                        articles.map((article)=>( 
-                            <div onClick={()=>{set_display_article(article)}} className={styles['article-card']}>
-                                <div className={styles['stock-info']}>
-                                    <p className={styles['stock-short-name']}>
-                                       {article.stock_ticker}
-                                    </p>
-                                    <p className={styles['stock-full-name']}>
-                                        Artificial And Big Type Script
-                                    </p>
-                                    <img style={{width:"35px",height:"35px"}} src={article.sentiment=="POSITIVE"?green_arrow:red_arrow} alt="" />
-                                </div>
-                                <div className={styles.bar}/>
-                                <div className={styles['article-info']}>
-                                    <p className={styles['article-title']}>
-                                        {article.title}
-                                    </p>
-                                    <p className={styles['stock-short-description']}>
-                                        {article.summary}
-                                    </p>
-                                    <div className={styles['stock-details']}>
-                                        <p className={styles.author}>
-                                            {article.news_source}
+                        {
+
+                            articles.map((article) => (
+                                <div onClick={() => {
+                                    set_display_article(article)
+                                }} className={styles['article-card']}>
+                                    <div className={styles['stock-info']}>
+                                        <p className={styles['stock-short-name']}>
+                                            {article.stock_ticker}
                                         </p>
-                                        <p className={styles['stock-date']}>
-                                            {article.publish_date}
+                                        <p className={styles['stock-full-name']}>
+                                            Artificial And Big Type Script
                                         </p>
+                                        <img style={{width: "35px", height: "35px"}}
+                                             src={article.sentiment == "POSITIVE" ? green_arrow : red_arrow} alt=""/>
+                                    </div>
+                                    <div className={styles.bar}/>
+                                    <div className={styles['article-info']}>
+                                        <p className={styles['article-title']}>
+                                            {article.title}
+                                        </p>
+                                        <p className={styles['stock-short-description']}>
+                                            {article.summary}
+                                        </p>
+                                        <div className={styles['stock-details']}>
+                                            <p className={styles.author}>
+                                                {article.news_source}
+                                            </p>
+                                            <p className={styles['stock-date']}>
+                                                {article.publish_date}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                       ))
-                   
-}
-</div>
+                            ))
+
+                        }
+                    </div>
                     <div className={styles['stock-article']}>
-                        
+                        {
+                            stock_data && (<LineChart/>)
+                        }
 
 
                         <div className={styles['stock-article-text']}>
                             <p>
-                                {display_article?display_article.article_text:""}
+                                {display_article ? display_article.article_text : ""}
                             </p>
                         </div>
                     </div>
