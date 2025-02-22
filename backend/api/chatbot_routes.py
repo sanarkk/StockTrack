@@ -25,7 +25,7 @@ class Article(BaseModel):
     article_text: str
     stock_ticker: str
     news_source: str
-    index_key: str
+    index_key: int
     parsing_date: str
 
 
@@ -33,26 +33,17 @@ class Article(BaseModel):
 async def send_message_to_user(
     article: Article,
 ):
-    print("here1")
-
     users = users_table.scan(ConsistentRead=True)
     users_db = users.get("Items", [])
     for user in users_db:
-        print("here1")
         try:
-            print("here2")
             if user["chat_id"] != "":
-                print("here3")
                 for item in user["interested_in"]:
-                    print(user["interested_in"])
-                    print(item)
                     is_same = False
                     if isinstance(item, dict):
-                        print("INSIDE USER DICT")
                         if item["ticker"] == article.stock_ticker:
                             is_same = True
                     else:
-                        print("NOT INSIDE")
                         if item == article.stock_ticker:
                             is_same = True
                     if is_same:
@@ -60,7 +51,6 @@ async def send_message_to_user(
                             "chat_id": user["chat_id"],
                             "article": article.dict(),
                         }
-                        print("before response")
                         response = requests.post(
                             "http://127.0.0.1:8004/send_telegram_message/",
                             json=data,
