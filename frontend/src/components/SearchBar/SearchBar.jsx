@@ -17,8 +17,8 @@ const SearchBar = () => {
         set_stock_suggestions([]); // Clear suggestions after selection
     };
 
-    const handleRemoveStock = (word) => {
-        set_selected_stocks(selected_stocks.filter((w) => w !== word));
+    const handleRemoveStock = (stock) => {
+        set_selected_stocks(selected_stocks.filter((w) => w !== stock));
     };
 
     return (
@@ -33,23 +33,23 @@ const SearchBar = () => {
 
             {searchInput && (
                 <ul className={styles.suggestionsList}>
-                    {stock_suggestions.map((word, index) => (
+                    {stock_suggestions.map((stock, index) => (
                         <li
                             key={index}
                             className={styles.suggestionItem}
-                            onClick={() => handleSelectStock(word)}
+                            onClick={() => handleSelectStock(stock)}
                         >
-                            {word.username}
+                            {stock.stock_name}
                         </li>
                     ))}
                 </ul>
             )}
 
             <div className={styles.selectedWords}>
-                {selected_stocks.map((word, index) => (
+                {selected_stocks.map((stock, index) => (
                     <div key={index} className={styles.selectedWord}>
-                        <span>{word.username}</span>
-                        <button onClick={() => handleRemoveStock(word)} className={styles.removeBtn}>Remove Stock</button>
+                        <span>{stock.stock_name}</span>
+                        <button onClick={() => handleRemoveStock(stock)} className={styles.removeBtn}>Remove Stock</button>
                     </div>
                 ))}
             </div>

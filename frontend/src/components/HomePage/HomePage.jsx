@@ -10,7 +10,7 @@ import SearchBar from '../SearchBar/SearchBar';
 
 const HomePage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const {username} = useContext(UserContext)
+    const {username, user_id,interested_in} = useContext(UserContext)
     return (
         <div className={styles.wrapper}>
             <div className={styles.sidebar}>
