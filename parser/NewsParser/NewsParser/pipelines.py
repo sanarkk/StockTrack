@@ -34,7 +34,6 @@ class DynamoDBPipeline:
             response = self.table.scan(ProjectionExpression="index_key", ConsistentRead = True)
             index_keys = [int(item['index_key']) for item in response.get('Items', []) if item.get('index_key')]
 
-            print(max(index_keys))
             return max(index_keys) + 1 if index_keys else 1
         except Exception as e:
             logging.error(f"Error fetching index keys: {e}")
@@ -60,7 +59,7 @@ class DynamoDBPipeline:
 
             #requests.post("http://localhost:8001/send_message", payload)
 
-            # spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
+            spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
         except ClientError as e:
             spider.logger.error(f"Failed to save article: {e}")
         return item
