@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext, useEffect, useRef} from 'react';
 import styles from "./HomePage.module.scss"
 import {Link} from "react-router";
 import LogoutIcon from '../../assets/icons/logoutIcon.png'
@@ -16,7 +16,8 @@ import {ArticleContext} from '../../contexts/article_context';
 import green_arrow from "./svgs/up.svg"
 import red_arrow from "./svgs/down.svg"
 import LineChart from "./LineChart";
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
+import { QRCodeCanvas } from "qrcode.react";
 
 const HomePage = () => {
     const {username, user_id, interested_in, logout} = useContext(UserContext)
@@ -26,6 +27,9 @@ const HomePage = () => {
     const {getSuggestions, set_selected_stocks, selected_stocks} = useContext(StocksContext)
     const {articles, getArticles, getStockData, stock_data} = useContext(ArticleContext)
     const [display_article, set_display_article] = useState(articles[0])
+    const [qrCodeOpened, set_qrCodeOpened] = useState(false)
+
+    const [TelegramLinkForChatBot, setTelegramLinkForChatBot] = useState("t.me/StockTrackNotifications_bot");
 
     useEffect(() => {
         getSuggestions(search, set_stocks)
@@ -82,14 +86,28 @@ const HomePage = () => {
                         ))
                     }
                 </div>
-                <div  className={styles['logout-container']}>
-                    <button onClick={()=>{logout()}} className={styles['logout-btn']}><img src={LogoutIcon} alt="Logout icon" /> Logout</button>
+                <div className={styles["logout-container"]}>
+                    <button onClick={() => logout()} className={styles["logout-btn"]}>
+                        <img src={LogoutIcon} alt="Logout icon"/> Logout
+                    </button>
+                    <button onClick={() => set_qrCodeOpened(!qrCodeOpened)} className={styles["logout-btn"]}>
+                        Open QR-Code
+                    </button>
                 </div>
             </div>
+            {qrCodeOpened && (
+                <div className={styles["qrcode-container"]}>
+                    <div className={styles.modal}>
+                        {TelegramLinkForChatBot && <QRCodeCanvas value={TelegramLinkForChatBot} size={500}/>}
+                        <br/>
+                        <button className={styles['close-qrcode-btn']} onClick={() => set_qrCodeOpened(false)}>Close</button>
+                    </div>
+                </div>
+            )}
             <div className={styles['main-container']}>
                 <div className={styles.header}>
                     <div className={styles['sort-container']}>
-                        <SortByDateDropdown/>
+                    <SortByDateDropdown/>
                         <SearchBar search_state={search} set_search_state={set_search}/>
                     </div>
                     <p className={styles.username}>Welcome back, <span>{username}</span></p>

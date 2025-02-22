@@ -48,7 +48,6 @@ const options = {
 
 const LineChart = () => {
   const {stock_data} = useContext(ArticleContext)
-  console.log(stock_data)
   const dates = stock_data.map((item) => {return item.date})
   const low_prices = stock_data.map((item) => {return item.low})
   const high_prices = stock_data.map((item) => {return item.high})

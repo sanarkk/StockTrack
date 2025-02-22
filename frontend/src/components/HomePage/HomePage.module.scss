@@ -64,11 +64,12 @@
 .logout-container {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   flex: 0 1 10%;
   width: 100%;
   padding: 0 24px;
   border-top: 2px solid #f8f8f8;
+  gap: 64px;
 
   .logout-btn {
     display: flex;
@@ -150,6 +151,7 @@
       }
     }
   }
+
   .username {
     font-size: 24px;
 
@@ -180,7 +182,7 @@
   overflow-y: auto;
   gap: 40px;
 
-  .article-card{
+  .article-card {
     display: flex;
     align-items: center;
     width: 100%;
@@ -287,7 +289,7 @@
     background-color: #ffffff;
     flex: 0 0 100%;
     width: 100%;
-    max-height: 360px;
+    max-height: 45%;
     padding: 12px 24px 24px 24px;
     overflow-y: auto;
   }
@@ -356,5 +358,60 @@
   &:hover {
     transform: scale(1.03);
     transition: 0.1s;
+  }
+}
+
+
+.qrcode-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #ffffff;
+    width: 600px;
+    height: 650px;
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 24px 20px 20px 20px;
+
+    .close-qrcode-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      width: 150px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      margin-top: 30px;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      transition: 0.2s;
+      background-color: #000000;
+      color: #ffffff;
+
+      img {
+        width: 24px;
+        height: 24px;
+      }
+
+      &:hover {
+        transform: scale(1.03);
+        transition: 0.1s;
+      }
+
+    }
   }
 }
