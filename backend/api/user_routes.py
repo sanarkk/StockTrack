@@ -16,8 +16,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl=SECRET_KEY)
 
 @router.post("/register/", response_model=User)
 async def register_user(user: UserCreate):
-    hashed_password = get_password_hash(user.password)
     user_data = user.dict()
+    is_registered = get_user_by_username(user_data["username"])
+    if is_registered:
+        raise HTTPException(
+            status_code=409, detail="Current username is in use"
+        )
+    hashed_password = get_password_hash(user.password)
     user_data["password"] = hashed_password
     user_data["chat_id"] = "default_chat_id"
     user_data["date"] = user_data["date"].strftime("%Y-%m-%d %H:%M:%S")
