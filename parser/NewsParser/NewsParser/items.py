@@ -5,8 +5,12 @@
 
 import scrapy
 
-
-class NewsparserItem(scrapy.Item):
+class BusinessInsiderItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    title = scrapy.Field()
+    publish_date = scrapy.Field()
+    article_text = scrapy.Field()
+    url = scrapy.Field()
+    stock_ticker = scrapy.Field()
+    news_source = scrapy.Field()
+    
