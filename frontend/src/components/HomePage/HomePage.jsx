@@ -127,7 +127,7 @@ const HomePage = () => {
                                             {article.stock_ticker}
                                         </p>
                                         <p className={styles['stock-full-name']}>
-                                            Artificial And Big Type Script
+                                           Sentiment score:  {Math.round(article.sentiment_score * 100) / 100}
                                         </p>
                                         <img style={{width: "35px", height: "35px"}}
                                              src={article.sentiment == "POSITIVE" ? green_arrow : red_arrow} alt=""/>
