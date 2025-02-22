@@ -26,11 +26,14 @@ def get_user_by_username(
                 Key={"user_id": user_item["id"]},
                 ConsistentRead=True,
             )
+            interested_in_item = next(
+                iter(latest_user.get("Item", {}).items()), None
+            )
             result = {
                 "user_id": user_item["id"],
                 "username": user_item.get("username"),
                 "password": user_item.get("password"),
-                "interested_in": latest_user.get("Item", {}),
+                "interested_in": interested_in_item[1:],
             }
             return result
         else:

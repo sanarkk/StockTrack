@@ -67,17 +67,26 @@ async def save_stock_preferences(username: str, data: list[str]):
             FilterExpression="contains(ticker, :data)",
             ExpressionAttributeValues={":data": ticker},
         )
-        tickers_data.append(ticker_db)
+        if len(ticker_db["Items"]) != 0:
+            tickers_data.append(ticker_db["Items"][0])
     update_response = users_table.update_item(
         Key={"user_id": user["user_id"]},  # Primary Key
         UpdateExpression="SET interested_in = :new_list",
         ExpressionAttributeValues={":new_list": tickers_data},
         ReturnValues="UPDATED_NEW",
     )
-    return update_response
+    user = get_user_by_username(username)
+    return user
 
 
 @router.get("/get_tickers/")
 async def get_user_tickers(username: str):
     user = get_user_by_username(username)
     return user["interested_in"]
+
+
+@router.get("/get_user_info/")
+async def get_user_info(username: str):
+    user = get_user_by_username(username)
+    user["password"] = None
+    return user
