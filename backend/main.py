@@ -4,13 +4,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.user_routes import router as user_router
+from api.user_routes import router as bot_router
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",
+        "*",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -18,3 +19,4 @@ app.add_middleware(
 )
 
 app.include_router(user_router)
+app.include_router(bot_router)

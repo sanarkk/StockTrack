@@ -5,6 +5,7 @@ import asyncio
 
 from typing import Dict
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from telegram import Update, Message
@@ -48,9 +49,20 @@ bot = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "*",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 class MessageRequest(BaseModel):
-    chat_id: int
-    text: str
+    chat_id: str
+    article: dict
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -127,7 +139,7 @@ async def cancel(update: Update, context: CallbackContext):
 @app.post("/send_message/")
 async def send_message(request: MessageRequest):
     try:
-        await bot.send_message(chat_id=request.chat_id, text=request.text)
+        await bot.send_message(chat_id=request.chat_id, text=request.article)
         return {"status": "Message sent successfully"}
     except Exception as e:
         return {"error": str(e)}
