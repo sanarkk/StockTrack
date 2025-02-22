@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 from config import SECRET_KEY
 from database.dynamodb import users_table
-from models.user_models import UserCreate, User
+from models.user_models import UserCreate, User, LoginRequest
 from services.user_services import get_user_by_username, create_user
 from auth.auth import get_password_hash, verify_password, create_access_token
 
@@ -27,7 +27,7 @@ async def register_user(user: UserCreate):
 
 
 @router.post("/token/")
-async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_user(form_data: LoginRequest):
     user = get_user_by_username(form_data.username)
     if not user or not verify_password(form_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
