@@ -74,7 +74,8 @@ def analyze_articles(articles):
     analyses = []
     for i, article in enumerate(articles):
         print(f"Analyzing article {i + 1}/{len(articles)}...")
-        analysis = analysis_pipeline(f"Provide a detailed analysis:\n\n{article[:512]}\n\nAnalysis:", max_length=200, num_return_sequences=1)[0]['generated_text']
+        # Directly generate analysis without additional text
+        analysis = analysis_pipeline(article[:512], max_length=200, num_return_sequences=1)[0]['generated_text']
         analyses.append(analysis)
     print("Detailed analysis complete.")
     return analyses
