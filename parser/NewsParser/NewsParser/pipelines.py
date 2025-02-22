@@ -31,16 +31,31 @@ class DynamoDBPipeline:
         )
         self.table = self.dynamodb.Table('InsiderArticles')
 
+    def get_next_index_key(self):
+        """Generate the next sequential index key."""
+        try:
+            response = self.table.scan(ProjectionExpression="index_key")
+            index_keys = [int(item['index_key']) for item in response.get('Items', []) if item.get('index_key')]
+            return max(index_keys) + 1 if index_keys else 1
+        except Exception as e:
+            logging.error(f"Error fetching index keys: {e}")
+            return 1
+
     def process_item(self, item, spider):
         try:
+            item['parsing_date'] = datetime.utcnow().isoformat()
+            item['index_key'] = self.get_next_index_key()
+
             self.table.put_item(
                 Item={
                     'url': item.get('url'),
                     'title': item.get('title'),
                     'publish_date': item.get('publish_date'),
                     'article_text': item.get('article_text'),
-                    'stock_ticker' : item.get('stock_ticker'),
-                    'news_source' : item.get('news_source')
+                    'stock_ticker': item.get('stock_ticker'),
+                    'news_source': item.get('news_source'),
+                    'index_key': item.get('index_key'),
+                    'parsing_date': item.get('parsing_date')
                 }
             )
             spider.logger.info(f"Article saved to DynamoDB: {item.get('url')}")
