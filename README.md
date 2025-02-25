@@ -1,5 +1,8 @@
 # Stock tracking platform
 
+## StockTrack on GitHub
+https://github.com/sanarkk/StockTrack
+
 ## Description
 This project is a comprehensive platform that provides analytics on the stock marked based on articles parsed from various news website. 
 The platform includes a website, a Telegram bot, and a backend system for parsing and preprocessing content. The analytics are derived from processed news articles, offering insights into trends, sentiments, and key topics in the finance space.
